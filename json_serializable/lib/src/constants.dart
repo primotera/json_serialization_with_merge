@@ -7,3 +7,4 @@ const closureArg = 'e';
 
 const generatedLocalVarName = 'val';
 const toJsonMapHelperName = 'writeNotNull';
+const mergeWithJsonMapHelperName = 'mergeNotNull';

@@ -179,6 +179,10 @@ class _GeneratorHelper extends HelperCore with EncodeHelper, DecodeHelper {
       yield* createToJson(accessibleFieldSet);
     }
 
+    if (config.createMergeWithJson) {
+      yield* createWithJson(accessibleFieldSet);
+    }
+
     yield* _addedMembers;
   }
 }

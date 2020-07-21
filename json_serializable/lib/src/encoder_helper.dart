@@ -11,7 +11,7 @@ import 'type_helpers/json_converter_helper.dart';
 import 'unsupported_type_error.dart';
 
 abstract class EncodeHelper implements HelperCore {
-  String _fieldAccess(FieldElement field) => '$_toJsonParamName.${field.name}';
+  String _fieldAccess(FieldElement field) => '$_mergeWithJsonParamName.${field.name}';
 
   Iterable<String> createToJson(Set<FieldElement> accessibleFields) sync* {
     assert(config.createToJson);
@@ -34,6 +34,27 @@ abstract class EncodeHelper implements HelperCore {
 
     yield buffer.toString();
   }
+  Iterable<String> createWithJson(Set<FieldElement> accessibleFields) sync* {
+    assert(config.createToJson);
+
+    final buffer = StringBuffer();
+
+    final functionName = '${prefix}WithJson${genericClassArgumentsImpl(true)}';
+    buffer.write('void '
+        '$functionName($targetClassReference $_mergeWithJsonParamName) ');
+
+    final writeNaive = accessibleFields.every(_writeJsonValueNaive);
+
+    if (writeNaive) {
+      // write simple `toJson` method that includes all keys...
+      _writeMergeWithJsonSimple(buffer, accessibleFields);
+    } else {
+      // At least one field should be excluded if null
+      _writeToJsonWithNullChecks(buffer, accessibleFields);
+    }
+
+    yield buffer.toString();
+  }
 
   void _writeToJsonSimple(StringBuffer buffer, Iterable<FieldElement> fields) {
     buffer
@@ -47,7 +68,20 @@ abstract class EncodeHelper implements HelperCore {
       ..writeln('};');
   }
 
+  void _writeMergeWithJsonSimple(StringBuffer buffer, Iterable<FieldElement> fields) {
+    buffer
+      ..writeln(' {')
+      ..writeAll(fields.map((field) {
+        final access = _fieldAccess(field);
+        final value =
+            '${safeNameAccess(field)} = ${_serializeField(field, access)}';
+        return '        $value,\n';
+      }))
+      ..writeln('};');
+  }
+
   static const _toJsonParamName = 'instance';
+  static const _mergeWithJsonParamName = 'instance';
 
   void _writeToJsonWithNullChecks(
     StringBuffer buffer,
@@ -71,6 +105,65 @@ abstract class EncodeHelper implements HelperCore {
       // access with `this.`.
       if (safeFieldAccess == generatedLocalVarName ||
           safeFieldAccess == toJsonMapHelperName) {
+        safeFieldAccess = 'this.$safeFieldAccess';
+      }
+
+      final expression = _serializeField(field, safeFieldAccess);
+      if (_writeJsonValueNaive(field)) {
+        if (directWrite) {
+          buffer.writeln('      $safeJsonKeyString: $expression,');
+        } else {
+          buffer.writeln(
+              '    $generatedLocalVarName[$safeJsonKeyString] = $expression;');
+        }
+      } else {
+        if (directWrite) {
+          // close the still-open map literal
+          buffer
+            ..writeln('    };')
+            ..writeln()
+
+            // write the helper to be used by all following null-excluding
+            // fields
+            ..writeln('''
+    void $toJsonMapHelperName(String key, dynamic value) {
+      if (value != null) {
+        $generatedLocalVarName[key] = value;
+      }
+    }
+''');
+          directWrite = false;
+        }
+        buffer.writeln(
+            '    $toJsonMapHelperName($safeJsonKeyString, $expression);');
+      }
+    }
+
+    buffer..writeln('    return $generatedLocalVarName;')..writeln('  }');
+  }
+
+  void _writeMergeWithJsonWithNullChecks(
+    StringBuffer buffer,
+    Iterable<FieldElement> fields,
+  ) {
+    buffer
+      ..writeln('{')
+      ..writeln('    final $generatedLocalVarName = <String, dynamic>{');
+
+    // Note that the map literal is left open above. As long as target fields
+    // don't need to be intercepted by the `only if null` logic, write them
+    // to the map literal directly. In theory, should allow more efficient
+    // serialization.
+    var directWrite = true;
+
+    for (final field in fields) {
+      var safeFieldAccess = _fieldAccess(field);
+      final safeJsonKeyString = safeNameAccess(field);
+
+      // If `fieldName` collides with one of the local helpers, prefix
+      // access with `this.`.
+      if (safeFieldAccess == generatedLocalVarName ||
+          safeFieldAccess == mergeWithJsonMapHelperName) {
         safeFieldAccess = 'this.$safeFieldAccess';
       }
 
