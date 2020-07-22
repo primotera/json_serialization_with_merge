@@ -105,6 +105,7 @@ JsonSerializable mergeConfig(JsonSerializable config, ConstantReader reader) {
     checked: annotation.checked ?? config.checked,
     createFactory: annotation.createFactory ?? config.createFactory,
     createToJson: annotation.createToJson ?? config.createToJson,
+    createMergeWithJson: annotation.createMergeWithJson ?? config.createMergeWithJson,
     disallowUnrecognizedKeys:
         annotation.disallowUnrecognizedKeys ?? config.disallowUnrecognizedKeys,
     explicitToJson: annotation.explicitToJson ?? config.explicitToJson,

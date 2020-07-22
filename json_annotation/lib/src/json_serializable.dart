@@ -28,6 +28,7 @@ enum FieldRename {
   checked: true,
   disallowUnrecognizedKeys: true,
   fieldRename: FieldRename.snake,
+  createMergeWithJson: false,
 )
 class JsonSerializable {
   /// If `true`, [Map] types are *not* assumed to be [Map<String, dynamic>]
@@ -72,6 +73,17 @@ class JsonSerializable {
   /// }
   /// ```
   final bool createToJson;
+
+  /// If `true` (the default), A top-level function is created that you can
+  /// reference from your class.
+  ///
+  /// ```dart
+  /// @JsonSerializable()
+  /// class Example {
+  ///   void mergeWithJson(Map<String, dynamic> json) => _$ExampleMergeWithJson(this);
+  /// }
+  /// ```
+  final bool createMergeWithJson;
 
   /// If `false` (the default), then the generated `FromJson` function will
   /// ignore unrecognized keys in the provided JSON [Map].
@@ -140,11 +152,12 @@ class JsonSerializable {
   final bool nullable;
 
   /// Creates a new [JsonSerializable] instance.
-  const JsonSerializable({
+  const JsonSerializable( {
     this.anyMap,
     this.checked,
     this.createFactory,
     this.createToJson,
+    this.createMergeWithJson,
     this.disallowUnrecognizedKeys,
     this.explicitToJson,
     this.fieldRename,
@@ -163,6 +176,7 @@ class JsonSerializable {
     checked: false,
     createFactory: true,
     createToJson: true,
+    createMergeWithJson: true,
     disallowUnrecognizedKeys: false,
     explicitToJson: false,
     fieldRename: FieldRename.none,
@@ -181,6 +195,7 @@ class JsonSerializable {
         checked: checked ?? defaults.checked,
         createFactory: createFactory ?? defaults.createFactory,
         createToJson: createToJson ?? defaults.createToJson,
+        createMergeWithJson: createMergeWithJson ?? defaults.createMergeWithJson,
         disallowUnrecognizedKeys:
             disallowUnrecognizedKeys ?? defaults.disallowUnrecognizedKeys,
         explicitToJson: explicitToJson ?? defaults.explicitToJson,

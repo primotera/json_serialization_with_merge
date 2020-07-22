@@ -22,6 +22,11 @@ abstract class TypeHelperContextWithConvert extends TypeHelperContext {
   ConvertData get serializeConvertData;
 
   ConvertData get deserializeConvertData;
+
+  ConvertData get mergeConvertData;
+
+
+
 }
 
 class ConvertHelper extends TypeHelper<TypeHelperContextWithConvert> {
@@ -60,5 +65,21 @@ class ConvertHelper extends TypeHelper<TypeHelperContextWithConvert> {
 
     final asContent = asStatement(fromJsonData.paramType);
     return '${fromJsonData.name}($expression$asContent)';
+  }
+  @override
+  String merge(
+    DartType targetType,
+    String expression,
+    TypeHelperContextWithConvert context,
+  ) {
+    final fromMergeData = context.mergeConvertData;
+    if (fromMergeData == null) {
+      return null;
+    }
+
+    logFieldWithConversionFunction(context.fieldElement);
+
+    final asContent = asStatement(fromMergeData.paramType);
+    return '${fromMergeData.name}($expression$asContent)';
   }
 }

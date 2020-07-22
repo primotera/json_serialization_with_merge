@@ -9,8 +9,10 @@ import 'package:source_gen/source_gen.dart';
 
 import 'decode_helper.dart';
 import 'encoder_helper.dart';
+import 'merge_helper.dart';
 import 'field_helpers.dart';
 import 'helper_core.dart';
+import 'merge_helper.dart';
 import 'type_helper.dart';
 import 'type_helpers/big_int_helper.dart';
 import 'type_helpers/convert_helper.dart';
@@ -98,7 +100,7 @@ class JsonSerializableGenerator
   }
 }
 
-class _GeneratorHelper extends HelperCore with EncodeHelper, DecodeHelper {
+class _GeneratorHelper extends HelperCore with EncodeHelper, DecodeHelper, MergeHelper {
   final JsonSerializableGenerator _generator;
   final _addedMembers = <String>{};
 
@@ -180,7 +182,8 @@ class _GeneratorHelper extends HelperCore with EncodeHelper, DecodeHelper {
     }
 
     if (config.createMergeWithJson) {
-      yield* createWithJson(accessibleFieldSet);
+      final createResult = createMergeWithJson(accessibleFields, unavailableReasons);
+      yield createResult.output;
     }
 
     yield* _addedMembers;

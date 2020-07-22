@@ -57,6 +57,13 @@ class TypeHelperCtx
       );
 
   @override
+  Object merge(DartType targetType, String expression) => _run(
+        targetType,
+        expression,
+        (TypeHelper th) => th.merge(targetType, expression, this),
+      );
+
+  @override
   Object deserialize(DartType targetType, String expression) => _run(
         targetType,
         expression,

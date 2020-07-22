@@ -6,6 +6,7 @@ part of 'json_serializable.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+
 JsonSerializable _$JsonSerializableFromJson(Map<String, dynamic> json) {
   return $checkedNew('JsonSerializable', json, () {
     $checkKeys(json, allowedKeys: const [
@@ -13,6 +14,7 @@ JsonSerializable _$JsonSerializableFromJson(Map<String, dynamic> json) {
       'checked',
       'create_factory',
       'create_to_json',
+      'create_merge_with_json',
       'disallow_unrecognized_keys',
       'explicit_to_json',
       'field_rename',
@@ -25,6 +27,7 @@ JsonSerializable _$JsonSerializableFromJson(Map<String, dynamic> json) {
       checked: $checkedConvert(json, 'checked', (v) => v as bool),
       createFactory: $checkedConvert(json, 'create_factory', (v) => v as bool),
       createToJson: $checkedConvert(json, 'create_to_json', (v) => v as bool),
+      createMergeWithJson: $checkedConvert(json, 'create_merge_with_json', (v) => v as bool),
       disallowUnrecognizedKeys:
           $checkedConvert(json, 'disallow_unrecognized_keys', (v) => v as bool),
       explicitToJson:
@@ -41,6 +44,7 @@ JsonSerializable _$JsonSerializableFromJson(Map<String, dynamic> json) {
     'anyMap': 'any_map',
     'createFactory': 'create_factory',
     'createToJson': 'create_to_json',
+    'createMergeWithJson': 'create_merge_with_json',
     'disallowUnrecognizedKeys': 'disallow_unrecognized_keys',
     'explicitToJson': 'explicit_to_json',
     'fieldRename': 'field_rename',
@@ -55,6 +59,7 @@ Map<String, dynamic> _$JsonSerializableToJson(JsonSerializable instance) =>
       'checked': instance.checked,
       'create_factory': instance.createFactory,
       'create_to_json': instance.createToJson,
+      'create_merge_with_json': instance.createMergeWithJson,
       'disallow_unrecognized_keys': instance.disallowUnrecognizedKeys,
       'explicit_to_json': instance.explicitToJson,
       'field_rename': _$FieldRenameEnumMap[instance.fieldRename],
