@@ -19,10 +19,10 @@ abstract class MergeHelper implements HelperCore {
     final buffer = StringBuffer();
 
     final mapType = config.anyMap ? 'Map' : 'Map<String, dynamic>';
-    buffer.write('void '
+    buffer.write('$targetClassReference '
         '${prefix}MergeWithJson${genericClassArgumentsImpl(true)}'
         '($targetClassReference $_mergeWithInstanceJsonParamName, '
-        '$mapType json) {\n');
+        '$mapType json) { return \n');
 
     String mergeFun(String paramOrFieldName, {ParameterElement ctorParam}) =>
         _mergeForField(accessibleFields[paramOrFieldName],
@@ -66,7 +66,7 @@ abstract class MergeHelper implements HelperCore {
     String value;
     try {
       final Object object =
-          contextHelper.merge(targetType, 'json[$jsonKeyName]') ??
+          contextHelper.deserialize(targetType, 'json[$jsonKeyName]') ??
               contextHelper.deserialize(targetType, 'json[$jsonKeyName]');
 
       value = object.toString();

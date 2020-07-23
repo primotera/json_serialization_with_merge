@@ -55,24 +55,6 @@ class JsonConverterHelper extends TypeHelper {
         '$expression$asContent', '${converter.accessString}.fromJson');
   }
 
-  @override
-  Object merge(
-    DartType targetType,
-    String expression,
-    TypeHelperContext context,
-  ) {
-    final converter = _typeConverter(targetType, context);
-    if (converter == null) {
-      return null;
-    }
-
-    final asContent = asStatement(converter.jsonType);
-
-    logFieldWithConversionFunction(context.fieldElement);
-
-    return LambdaResult(
-        '$expression$asContent', '${converter.accessString}.mergeWithJson');
-  }
 }
 
 class _JsonConvertData {
